@@ -18,7 +18,7 @@
 
 void writeByte(char, FILE*);
 void writeBitFrame(char*, FILE*);
-char readByte(FILE*);
-char* readBitFrame(FILE*);
+char readByte(char*);
+int readBitFrame(char*, FILE*);
 
 #endif

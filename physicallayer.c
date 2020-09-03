@@ -9,6 +9,7 @@
 ******************************************************************************/
 
 #include "physicallayer.h"
+#include <string.h>
 
 
 /******************************************************************************
@@ -27,23 +28,18 @@ void writeByte(char ch, FILE* fp)
 ******************************************************************************/
 void writeBitFrame(char* frame, FILE* fp){
     int frameLegth = frame[2];
-    int i = 0;
-    for(i=0; i< 3; i++){
-        writeByte(frame[i], fp);
-    }
-    for(i=3; i< frameLegth;i++)
+    for(int i=0; i< frameLegth+3;i++)
     {
         writeByte(frame[i], fp);
     }
 }
 
-
 /******************************************************************************
 * reads a 8 char array of 0s and 1s as a char
 ******************************************************************************/
-char readByte(char** byte)
+char readByte(char* byte)
 {
-    char* buffer = *byte;
+    char* buffer = byte;
     char val = 0;
     for (int i = 0; i < BYTE_LEN; ++i)
     {
@@ -55,15 +51,14 @@ char readByte(char** byte)
 /******************************************************************************
 * reads the char frames from a file
 ******************************************************************************/
-char* readBitFrame(FILE* fp){
+int readBitFrame(char* frame, FILE* fp){
     char byte[BYTE_LEN];
-    char* frame = (char *)malloc(FRAME_LEN);
-    memset(frame, '\0', FRAME_LEN);
-    for(int i =0; i<FRAME_LEN; i++){
+    int i =0;
+    for(i =0; i<FRAME_LEN; i++){
         int len = fread(byte, sizeof(char), BYTE_LEN, fp);
         if (len < BYTE_LEN)
-            break;
-        frame[i] = readByte(&byte);
+            return 0;
+        frame[i] = readByte(byte);
     }
-    return frame;
+    return i;
 }

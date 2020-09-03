@@ -1,0 +1,53 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "build transmitter",
+			"command": "/usr/bin/gcc",
+			"args": [
+				"-g",
+				"${workspaceFolder}/transmitter.c",
+				"${workspaceFolder}/application.c",
+				"${workspaceFolder}/datalinklayer.c",
+				"${workspaceFolder}/physicallayer.c",
+				"-o",
+				"${workspaceFolder}/transmitter.out"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "shell",
+			"label": "build receiver",
+			"command": "/usr/bin/gcc",
+			"args": [
+				"-g",
+				"${workspaceFolder}/receiver.c",
+				"${workspaceFolder}/application.c",
+				"${workspaceFolder}/datalinklayer.c",
+				"${workspaceFolder}/physicallayer.c",
+				"-o",
+				"${workspaceFolder}/receiver.out"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

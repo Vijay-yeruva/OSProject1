@@ -13,5 +13,5 @@
 #include <stdio.h>
 
 char* frameData(char*, FILE*);
-int deframeData(FILE*,char**, int);
+int deframeData(FILE*,char*, int);
 #endif

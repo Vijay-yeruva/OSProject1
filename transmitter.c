@@ -9,9 +9,16 @@
 ******************************************************************************/
 #include "application.h"
 
-int main(){
+int main(int argc, char* argv[]){
     FILE *fin,*fbits;
-    fin = fopen("Input.txt", "r"); 
+    if(argc < 2){
+        printf("Please enter input file as an argument\n");
+        return 0;
+    }
+    else{
+        fin = fopen(argv[1], "r"); 
+    }
+    
     fbits = fopen("Bits.txt", "w");
     transmit(fin, fbits);
     fclose(fin);

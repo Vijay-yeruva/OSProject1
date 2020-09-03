@@ -10,13 +10,14 @@
 
 #include "physicallayer.h"
 #include "datalinklayer.h"
+#include <string.h>
 
 /******************************************************************************
 * Frames a null terminated char array into data frames and writes into file
 ******************************************************************************/
-char* frameData(char** data, FILE* fp){
-    char* buffer = *data;
-    char frame[FRAME_LEN];
+char* frameData(char* data, FILE* fp){
+    char* buffer = data;
+    char frame[FRAME_LEN] = {'\0'};
     int i =0;
     //divide the buffer into frames and write the bit frame
     while(*buffer != '\0'){
@@ -28,25 +29,22 @@ char* frameData(char** data, FILE* fp){
         else
         {
             frame[i] = *buffer;
+            buffer++;
         }
 
         if(i == FRAME_LEN -1)
         {
             frame[2] = i - 2;
-            writeBitFrame(&frame, fp);
+            writeBitFrame(frame, fp);
             memset(frame, '\0', FRAME_LEN);
             i = 0;
         }
-        else
-        {
-            i++;
-            buffer++;
-        }
+        i++;
     }
     //if there are any extra frame left at the end should be written
-    if(i != 0){
+    if(i > 1){
         frame[2] = i - 2;
-        writeBitFrame(&frame, fp);
+        writeBitFrame(frame, fp);
         memset(frame, '\0', FRAME_LEN);
         i = 0;
     }
@@ -55,17 +53,20 @@ char* frameData(char** data, FILE* fp){
 /******************************************************************************
 * Deframes dataframe from file and returns char array one frame at a time
 ******************************************************************************/
-int deframeData(FILE* fp, char** data, int size){
-    char* buffer = *data;
+int deframeData(FILE* fp, char* data, int size){
+    char* buffer = data;
     int i = 0;
     while(i< size)
     {
-        char* frame = readBitFrame(fp);
+        char frame[FRAME_LEN] = {'\0'};
+        int val = readBitFrame(frame, fp);
         int len = frame[2];
-        for(int j=3; j < len; j++){
-           buffer[i] = frame[j];
+        for(int j=0; j < len; j++){
+           buffer[i] = frame[j+3];
            i++;
         }
+        if(val == 0) //Reached end of bit file
+           break;
     }
     return i;
 }
