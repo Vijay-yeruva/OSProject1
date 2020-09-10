@@ -9,6 +9,7 @@
 ******************************************************************************/
 
 #include "physicallayer.h"
+#include "crc.h"
 #include <string.h>
 
 
@@ -28,10 +29,12 @@ void writeByte(char ch, FILE* fp)
 ******************************************************************************/
 void writeBitFrame(char* frame, FILE* fp){
     int frameLegth = frame[2];
+    encodecrc(frame);
     for(int i=0; i< frameLegth+3;i++)
     {
         writeByte(frame[i], fp);
     }
+   
 }
 
 /******************************************************************************
@@ -60,5 +63,6 @@ int readBitFrame(char* frame, FILE* fp){
             return 0;
         frame[i] = readByte(byte);
     }
+    checkerror(frame);
     return i;
 }
