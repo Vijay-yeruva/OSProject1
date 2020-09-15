@@ -7,10 +7,12 @@
 			"command": "/usr/bin/gcc",
 			"args": [
 				"-g",
-				"${workspaceFolder}/transmitter.c",
-				"${workspaceFolder}/application.c",
-				"${workspaceFolder}/datalinklayer.c",
+				"${workspaceFolder}/crc.c",
+				"${workspaceFolder}/errormodule.c",
 				"${workspaceFolder}/physicallayer.c",
+				"${workspaceFolder}/datalinklayer.c",
+				"${workspaceFolder}/application.c",
+				"${workspaceFolder}/transmitter.c",
 				"-o",
 				"${workspaceFolder}/transmitter.out"
 			],
@@ -31,10 +33,12 @@
 			"command": "/usr/bin/gcc",
 			"args": [
 				"-g",
-				"${workspaceFolder}/receiver.c",
-				"${workspaceFolder}/application.c",
-				"${workspaceFolder}/datalinklayer.c",
+				"${workspaceFolder}/crc.c",
+				"${workspaceFolder}/errormodule.c",
 				"${workspaceFolder}/physicallayer.c",
+				"${workspaceFolder}/datalinklayer.c",
+				"${workspaceFolder}/application.c",
+				"${workspaceFolder}/receiver.c",
 				"-o",
 				"${workspaceFolder}/receiver.out"
 			],

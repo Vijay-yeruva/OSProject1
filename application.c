@@ -39,6 +39,5 @@ void receive(FILE* fin, FILE* fout){
         if(len == 0)
             break;
     }
-    
-  
 }
+

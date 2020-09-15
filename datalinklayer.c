@@ -10,6 +10,8 @@
 
 #include "physicallayer.h"
 #include "datalinklayer.h"
+#include "constants.h"
+#include "crc.h"
 #include <string.h>
 
 /******************************************************************************
@@ -55,17 +57,34 @@ char* frameData(char* data, FILE* fp){
 ******************************************************************************/
 int deframeData(FILE* fp, char* data, int size){
     char* buffer = data;
+    int end = feof(fp);
     int i = 0;
-    while(i< size)
+    while(i < size && !end)
     {
+        char frameCRC[FRAME_CRC_LEN + 1] = {'\0'};
+        long pos = ftell(fp);
+        int val = readBinaryFrame(frameCRC, fp);
+        end = feof(fp);
+        if(val != -1)
+        {
+            val = checkframeerror(frameCRC, val);
+            if(val == FAILURE)
+            {
+                printf("Error in the frame: %s", frameCRC);
+                return FAILURE;
+            }
+        }
         char frame[FRAME_LEN] = {'\0'};
-        int val = readBitFrame(frame, fp);
+        fseek(fp,pos,SEEK_SET);
+        val = readBitFrame(frame, fp);
+        char remainder[33] = {'\0'};
+        int rval = readCRCremainder(remainder, fp);
         int len = frame[2];
         for(int j=0; j < len; j++){
            buffer[i] = frame[j+3];
            i++;
         }
-        if(val == 0) //Reached end of bit file
+        if(end) //Reached end of bit file
            break;
     }
     return i;

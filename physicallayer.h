@@ -12,13 +12,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#define BYTE_LEN 8
-#define FRAME_LEN 67
+#include "errormodule.h"
 
 void writeByte(char, FILE*);
+char* writeByteToArray(char, char*);
 void writeBitFrame(char*, FILE*);
 char readByte(char*);
 int readBitFrame(char*, FILE*);
+int readCRCremainder(char*, FILE*);
+int readBinaryFrame(char*, FILE*);
 
 #endif

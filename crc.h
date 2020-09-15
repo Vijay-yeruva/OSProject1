@@ -12,8 +12,9 @@
 #define CRC_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include "constants.h"
 
-int CRC[32] = {0};
-int* encodecrc(int*, int);
-int checkerror(int*, int);
+char* encodecrc(char*, int);
+int checkframeerror(char*, int);
 #endif
