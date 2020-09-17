@@ -16,10 +16,15 @@
 
 void writeByte(char, FILE*);
 char* writeByteToArray(char, char*);
-void writeBitFrame(char*, FILE*);
+void writeBitFrame(char*, FILE*, int);
+void writeBitFrameCRC(char*, FILE*);
+void writeBitFrameHamming(char*, FILE*);
 char readByte(char*);
-int readBitFrame(char*, FILE*);
+int readBitFrame(char*, FILE*, int);
+int checkFrameError(FILE*);
 int readCRCremainder(char*, FILE*);
 int readBinaryFrame(char*, FILE*);
+char readHammingByte(char*);
+int readHammingBitFrame(char*, FILE*);
 
 #endif

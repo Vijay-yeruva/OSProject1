@@ -29,7 +29,7 @@ char* encodecrc(char* data, int size){
     return framecrc;
 }
 
-int checkframeerror(char* data, int size){
+int checkcrcerror(char* data, int size){
     int length = size - CRC_LEN;
     char* framecrc = (char*)calloc(size, sizeof(char));
     memcpy(framecrc, data, length);

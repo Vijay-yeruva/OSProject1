@@ -10,6 +10,7 @@
 
 #include "physicallayer.h"
 #include "crc.h"
+#include "hammingcode.h"
 #include "constants.h"
 #include <string.h>
 
@@ -36,7 +37,31 @@ void writeByte(char ch, FILE* fp)
 /******************************************************************************
 * writes the char frame as a bit frame to the file given
 ******************************************************************************/
-void writeBitFrame(char* frame, FILE* fp){
+void writeBitFrame(char* frame, FILE* fp, int encodingType){
+    int frameLegth = frame[2];
+    switch (encodingType)
+    {
+    case ENCODE_NONE: 
+        for(int i=0; i< frameLegth+3;i++)
+        {
+            writeByte(frame[i], fp);
+        }
+        break;
+    case ENCODE_CRC:
+        writeBitFrameCRC(frame, fp);
+        break;
+    case ENCODE_HAMMING:
+        writeBitFrameHamming(frame, fp);
+        break;
+    default:
+        break;
+    }
+}
+
+/******************************************************************************
+* writes the char frame as a CRC encoded bit frame to the file given
+******************************************************************************/
+void writeBitFrameCRC(char* frame, FILE* fp){
     int frameLegth = frame[2];
     char* framebyte = (char*)malloc((frameLegth+3) * BYTE_LEN * sizeof(char));
     memset(framebyte, '0', (frameLegth+3) * BYTE_LEN );
@@ -53,6 +78,23 @@ void writeBitFrame(char* frame, FILE* fp){
     }
     //free(framebyte);
     //free(framecrc);
+}
+
+/******************************************************************************
+* writes the char frame as a hamming encoded bit frame to the file given
+******************************************************************************/
+void writeBitFrameHamming(char* frame, FILE* fp){
+    int frameLegth = frame[2];
+    for(int i=0; i< frameLegth+3;i++)
+    {
+        char bytearray[BYTE_LEN] = {'0'};
+        writeByteToArray(frame[i], bytearray);
+        char hammingcode[2*HAMMING_LEN] = {'0'};
+        encodehamming(bytearray, hammingcode);
+        for(int j = 0; j < 2*HAMMING_LEN; j++){
+            putc(hammingcode[j], fp);
+        }
+    }
 }
 
 /******************************************************************************
@@ -93,25 +135,46 @@ char readByte(char* byte)
 /******************************************************************************
 * reads the char frames from a file
 ******************************************************************************/
-int readBitFrame(char* frame, FILE* fp){
+int readBitFrame(char* frame, FILE* fp, int encodingType){
     char byte[BYTE_LEN];
     int i =0;
-    int datalength = 0;
-    for(i =0; i<FRAME_LEN; i++){
+    if(encodingType == ENCODE_HAMMING){
+        return readHammingBitFrame(frame, fp);
+    }
+
+    if(encodingType == ENCODE_CRC){
+        checkFrameError(fp);
+    }
+
+    for(i=0; i<FRAME_LEN; i++){
         int len = fread(byte, sizeof(char), BYTE_LEN, fp);
         if (len < BYTE_LEN)
             return 0;
         frame[i] = readByte(byte);
-        if(i == 2){
-            datalength = frame[i];
-        }
-        if(i > 2 && i > datalength +2){
-            break;
-        }
+    }
+     
+    if(encodingType == ENCODE_CRC){
+        char remainder[33] = {'\0'};
+        int rval = readCRCremainder(remainder, fp);
     }
     return i;
 }
 
+int checkFrameError(FILE* fp){
+    char frameCRC[FRAME_CRC_LEN + 1] = {'\0'};
+    long pos = ftell(fp);
+    int val = readBinaryFrame(frameCRC, fp);
+    if(val != -1)
+    {
+        val = checkcrcerror(frameCRC, val);
+        if(val == FAILURE)
+        {
+            printf("Error in the frame: %s", frameCRC);
+            return FAILURE;
+        }
+    }
+    fseek(fp,pos,SEEK_SET);
+}
 
 /******************************************************************************
 * reads the CRC remainder at the end of frames from a file
@@ -155,4 +218,30 @@ int readBinaryFrame(char* frame, FILE* fp)
     int val = i * 8 + len;
     return val;
 
+}
+
+char readHammingByte(char* hammingcode)
+{
+    char buffer[BYTE_LEN] = {0};
+    correcterrorsanddecode(hammingcode, buffer);
+    char val = 0;
+    for (int i = 0; i < BYTE_LEN-1; ++i)
+    {
+        val |= ((int)buffer[i] - 48) << i;
+    }
+    return val;
+
+}
+
+int readHammingBitFrame(char* frame, FILE* fp)
+{
+    char hammingcode[2*HAMMING_LEN];
+    int i =0;
+    for(i =0; i<FRAME_LEN; i++){
+        int len = fread(hammingcode, sizeof(char), 2*HAMMING_LEN, fp);
+        if (len < 2*HAMMING_LEN)
+            return 0;
+        frame[i] = readHammingByte(hammingcode);
+    }
+    return i;
 }

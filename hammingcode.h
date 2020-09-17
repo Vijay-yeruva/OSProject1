@@ -3,18 +3,16 @@
 * Name: 	Vijay Yeruva
 * Email: 	vyeruva@albany.edu
 *
-* crc.h
+* hammingcode.h
 *
 ******************************************************************************/
-
-
-#ifndef CRC_H
-#define CRC_H
+#ifndef HAMMING_CODE_H
+#define HAMMING_CODE_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "constants.h"
 
-char* encodecrc(char*, int);
-int checkcrcerror(char*, int);
+int encodehamming(char*, char*);
+int correcterrorsanddecode(char*, char*);
 #endif
