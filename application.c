@@ -12,6 +12,7 @@
 #include "datalinklayer.h"
 #include <string.h>
 
+extern FILE* ferr;
 /******************************************************************************
 * transforms a text file to an intermediate file
 ******************************************************************************/
@@ -24,7 +25,6 @@ void transmit(FILE* fin, FILE* fout, int encodingType){
         if(len < BUFF_LEN)
             break;
     }
-   
 }
 /******************************************************************************
 * transforms an intermediate file to a text file
@@ -39,5 +39,7 @@ void receive(FILE* fin, FILE* fout, int encodingType){
         if(len == 0)
             break;
     }
+    if(ferr == NULL)
+    fclose(ferr);
 }
 

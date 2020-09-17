@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 #include "errormodule.h"
 #include "constants.h"
 
@@ -10,6 +11,7 @@ errorlocation writeerror(FILE* fp){
     location.bit = 0;
     location.byte = 0;
     location.frame = 0;
+    sleep(1);
     srand((unsigned) time(&t));
     fseek(fp, 0L, SEEK_END); 
     long length = ftell(fp);
@@ -18,8 +20,9 @@ errorlocation writeerror(FILE* fp){
     location.byte = (pos % FRAME_CRC_LEN) / BYTE_LEN + 1;
     location.bit = (pos % FRAME_CRC_LEN) % BYTE_LEN;
     fseek(fp,pos,SEEK_SET);
-    char ch = fgetc(fp);
-    ch = ch == '0'? '1' : '0';
+    char s[1];
+    char* val = fgets(s,1,fp);
+    char ch = s[0] == '0'? '1' : '0';
     fseek(fp,pos,SEEK_SET);
     fputc(ch, fp);
     return location;

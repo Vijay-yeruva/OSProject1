@@ -48,6 +48,27 @@ int encodehamming(char* byte, char* encodedbyte)
 }
 
 /******************************************************************************
+* This function only decodes the hamming code without correcting it.
+* This is only data bits are picked from hamming code ignoring the parity bits
+******************************************************************************/
+int decodehamming(char* hammingcode, char* byte)
+{
+     //Now add the data bits to bytes
+    for(int i = 0; i<BYTE_LEN; i++){
+        if(i < HAMMING_LEN/2) 
+            byte[i] = hammingcode[i];
+        if( i == HAMMING_LEN/2)
+            byte[i] = hammingcode[i+1];
+        if(i > HAMMING_LEN/2 && i < BYTE_LEN -1)
+            byte[i] = hammingcode[i+3];
+        if( i ==  BYTE_LEN - 1)
+            byte[i] = hammingcode[i+4];
+    } 
+
+    return SUCCESS;
+}
+
+/******************************************************************************
 * This function checks and corrects and then decodes a byte from the hamming code supplied
 * Here (7,4) hamming code is implemented where every 4 bits are encoded
 * Assumption the hamming code array is of size 14

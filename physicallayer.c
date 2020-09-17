@@ -14,21 +14,21 @@
 #include "constants.h"
 #include <string.h>
 
-
+FILE* ferr = NULL;
 /******************************************************************************
 * writes a char as a 8 char array of 0s and 1s
 ******************************************************************************/
 void writeByte(char ch, FILE* fp)
 {
     int parity = 0;
-    for (int i = 0; i < BYTE_LEN - 1; --i)
+    for (int i = 0; i < BYTE_LEN - 1; ++i)
     {   
-        char ch = '0';
+        char bit = '0';
         if(ch & (1 << i)){
             parity += 1;
-            ch = '1';
+            bit = '1';
         }
-	    putc(ch & (1 << i) ? '1' : '0', fp);
+	    putc(bit, fp);
     }
     //odd parity bit
     putc(parity % 2 ? '0':'1', fp);
@@ -135,6 +135,7 @@ char readByte(char* byte)
 /******************************************************************************
 * reads the char frames from a file
 ******************************************************************************/
+
 int readBitFrame(char* frame, FILE* fp, int encodingType){
     char byte[BYTE_LEN];
     int i =0;
@@ -236,11 +237,20 @@ char readHammingByte(char* hammingcode)
 int readHammingBitFrame(char* frame, FILE* fp)
 {
     char hammingcode[2*HAMMING_LEN];
+    char buffer[BYTE_LEN];
+    if(ferr == NULL)
+    {
+        ferr = fopen("error.txt", "w");
+    }
     int i =0;
     for(i =0; i<FRAME_LEN; i++){
         int len = fread(hammingcode, sizeof(char), 2*HAMMING_LEN, fp);
         if (len < 2*HAMMING_LEN)
             return 0;
+        decodehamming(hammingcode, buffer);
+        char ch = readByte(buffer);
+        if(i>2)
+            fputc(ch, ferr);
         frame[i] = readHammingByte(hammingcode);
     }
     return i;

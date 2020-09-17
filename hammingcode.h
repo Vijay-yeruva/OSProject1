@@ -14,5 +14,6 @@
 #include "constants.h"
 
 int encodehamming(char*, char*);
+int decodehamming(char*, char*);
 int correcterrorsanddecode(char*, char*);
 #endif

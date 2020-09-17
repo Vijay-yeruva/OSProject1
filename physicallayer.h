@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include "errormodule.h"
 
+extern FILE* ferr; 
 void writeByte(char, FILE*);
 char* writeByteToArray(char, char*);
 void writeBitFrame(char*, FILE*, int);
